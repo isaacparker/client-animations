@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -182,6 +182,41 @@
       pointer-events: none;
     }
 
+    /* Stroke border trace effect */
+    .border-trace-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      border-radius: 16px;
+    }
+
+    .border-trace-svg rect {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: traceBorder 2.5s ease-out forwards,
+                 borderGlow 2s ease-in-out infinite 2.5s;
+      filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+    }
+
+    @keyframes traceBorder {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes borderGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.4));
+      }
+      50% {
+        filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.8));
+      }
+    }
+
     /* Sidebar */
     .sidebar {
       width: 64px;
@@ -289,6 +324,19 @@
       flex-shrink: 0;
       background: linear-gradient(135deg, #C5E3E9, #08363F);
       position: relative;
+      animation: avatarGlow 3s ease-in-out infinite;
+      will-change: box-shadow;
+    }
+
+    @keyframes avatarGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(197, 227, 233, 0.4),
+                    0 0 8px 2px rgba(197, 227, 233, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 0 4px rgba(197, 227, 233, 0.1),
+                    0 0 16px 4px rgba(197, 227, 233, 0.3);
+      }
     }
 
     .bot-info {
@@ -329,16 +377,23 @@
     
     .bot-status #status-text {
       position: relative;
-      background: linear-gradient(90deg, #6B7280 0%, #9CA3AF 50%, #6B7280 100%);
-      background-size: 200% 100%;
+      background: linear-gradient(90deg, 
+        #6B7280 0%, 
+        #3B82F6 30%, 
+        #9CA3AF 50%, 
+        #3B82F6 70%, 
+        #6B7280 100%
+      );
+      background-size: 300% 100%;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shimmer 2s ease-in-out infinite;
+      animation: shimmer 3s ease-in-out infinite;
     }
     
     @keyframes shimmer {
       0% { background-position: -200% 0; }
+      50% { background-position: 0% 0; }
       100% { background-position: 200% 0; }
     }
 
@@ -386,6 +441,32 @@
       border-radius: 4px;
       overflow: hidden;
       contain: layout style paint;
+      will-change: transform;
+    }
+
+    .items-container::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(59, 130, 246, 0.05) 50%,
+        transparent 100%
+      );
+      transform: translateX(-100%);
+      animation: containerShimmer 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+      will-change: transform;
+    }
+
+    @keyframes containerShimmer {
+      0% { transform: translateX(-100%); }
+      50%, 100% { transform: translateX(100%); }
     }
 
     .items-fade-top {
@@ -437,14 +518,29 @@
     .check-item.fetching { 
       background: #EFF6FF; 
       border: 1px solid #DBEAFE;
+      animation: itemActivePulse 2s ease-in-out infinite;
+      will-change: border-color, box-shadow;
     }
     .check-item.analyzing { 
       background: #F5F3FF; 
       border: 1px solid #EDE9FE;
+      animation: itemActivePulse 2s ease-in-out infinite;
+      will-change: border-color, box-shadow;
     }
     .check-item.complete { 
       background: #F0FDF4; 
       border: 1px solid #DCFCE7;
+    }
+
+    @keyframes itemActivePulse {
+      0%, 100% {
+        border-color: currentColor;
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+      }
+      50% {
+        border-color: rgba(59, 130, 246, 0.6);
+        box-shadow: 0 0 8px 0 rgba(59, 130, 246, 0.2);
+      }
     }
 
     .item-label {
@@ -631,31 +727,6 @@
       background: #0F766E;
     }
 
-    .rc-links {
-      margin-bottom: 8px;
-    }
-
-    .rc-links-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #111827;
-      margin-bottom: 6px;
-    }
-
-    .rc-link {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: #2563EB;
-      margin-bottom: 4px;
-      cursor: pointer;
-    }
-
-    .rc-link:hover {
-      text-decoration: underline;
-    }
-
     .rc-items {
       margin-bottom: 8px;
     }
@@ -788,6 +859,17 @@
 
     <!-- Main Slack Window -->
     <div class="slack-window">
+      <!-- Animated stroke border trace -->
+      <svg class="border-trace-svg" viewBox="0 0 720 544" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="716" height="540" rx="14" stroke="url(#borderGradient)" stroke-width="3" pathLength="100"/>
+        <defs>
+          <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(59, 130, 246, 0.8);stop-opacity:1" />
+            <stop offset="50%" style="stop-color:rgba(139, 92, 246, 0.9);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgba(59, 130, 246, 0.8);stop-opacity:1" />
+          </linearGradient>
+        </defs>
+      </svg>
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="slack-logo">
@@ -897,22 +979,6 @@
 
             <button class="rc-button">Scale payment-web</button>
 
-            <div class="rc-links">
-              <div class="rc-links-title">Key Links:</div>
-              <div class="rc-link">
-                <span>🔗</span>
-                <span>Lost quorum metric values</span>
-              </div>
-              <div class="rc-link">
-                <span>🔗</span>
-                <span>Health check failures</span>
-              </div>
-              <div class="rc-link">
-                <span>🔗</span>
-                <span>SLO response time</span>
-              </div>
-            </div>
-
             <div class="rc-items" id="rc-items"></div>
 
             <div class="rc-actions">
@@ -988,6 +1054,10 @@
       right: "Wow! It's very impressive that it got it right that time",
       left: "Wow, there was barely any evidence to work with."
     };
+    
+    // Data sources for fetching phase
+    const dataSources = ['logs', 'metrics', 'traces'];
+    const itemDataSources = {}; // Store which source each item is fetching from
 
     let mainTimeline;
     let processedCount = 0;
@@ -1045,10 +1115,13 @@
     function setDotsActive(active) {
       const statusDots = document.getElementById('status-dots');
       const processingView = document.getElementById('processing-view');
-      const processingVisible = processingView && processingView.style.display !== 'none';
+      const processingVisible = processingView && window.getComputedStyle(processingView).display !== 'none' && window.getComputedStyle(processingView).opacity !== '0';
       if (statusDots) {
-        if (active && processingVisible) statusDots.classList.add('dots-anim');
-        else statusDots.classList.remove('dots-anim');
+        if (active && processingVisible) {
+          statusDots.classList.add('dots-anim');
+        } else {
+          statusDots.classList.remove('dots-anim');
+        }
       }
 
       const itemDots = document.querySelectorAll('.item-dots');
@@ -1256,7 +1329,13 @@
         const oldText = item.status.textContent;
         let newText = '';
         if (phase === 'waiting') newText = 'Waiting for dependencies';
-        else if (phase === 'fetching') newText = 'Fetching data';
+        else if (phase === 'fetching') {
+          // Assign a random data source for this item if not already assigned
+          if (!itemDataSources[item.index]) {
+            itemDataSources[item.index] = dataSources[Math.floor(Math.random() * dataSources.length)];
+          }
+          newText = `Fetching ${itemDataSources[item.index]}`;
+        }
         else if (phase === 'analyzing') newText = 'Analyzing result';
         else if (phase === 'complete') newText = itemResults[item.index];
         
@@ -1328,6 +1407,11 @@
 
     function resetAllState() {
       processedCount = 0;
+      
+      // Clear data source assignments for fresh randomization
+      for (let key in itemDataSources) {
+        delete itemDataSources[key];
+      }
 
       elements.processingView.style.display = 'block';
       gsap.set(elements.processingView, { opacity: 1, force3D: true });
@@ -1359,13 +1443,12 @@
         const rcAlert = elements.rootCauseView.querySelector('.rc-alert');
         const rcBox = elements.rootCauseView.querySelector('.rc-box');
         const rcButton = elements.rootCauseView.querySelector('.rc-button');
-        const rcLinks = elements.rootCauseView.querySelector('.rc-links');
         const rcItems = elements.rootCauseView.querySelector('.rc-items');
         const rcActions = elements.rootCauseView.querySelector('.rc-actions');
         const rcFeedback = elements.rootCauseView.querySelector('.rc-feedback');
         
         // Set content to invisible (rcItems container stays visible, children animate)
-        [rcAlert, rcBox, rcButton, rcLinks, rcActions, rcFeedback].forEach(el => {
+        [rcAlert, rcBox, rcButton, rcActions, rcFeedback].forEach(el => {
           if (el) gsap.set(el, { opacity: 0, y: 8, force3D: true });
         });
         // rcItems container visible, but its children start invisible
@@ -1429,6 +1512,9 @@
       setCardBaseHeights();
       resetAllState();
       animateLoadingDots();
+      
+      // Ensure dots are active at start
+      setDotsActive(true);
 
       mainTimeline = gsap.timeline({
         defaults: { force3D: true },
@@ -1436,6 +1522,8 @@
         repeatDelay: 0.5,
         onRepeat: () => {
           resetAllState();
+          animateLoadingDots();
+          setDotsActive(true);
         }
       });
 
@@ -1508,7 +1596,6 @@
       const rcAlert = elements.rootCauseView.querySelector('.rc-alert');
       const rcBox = elements.rootCauseView.querySelector('.rc-box');
       const rcButton = elements.rootCauseView.querySelector('.rc-button');
-      const rcLinks = elements.rootCauseView.querySelector('.rc-links');
       const rcItems = elements.rootCauseView.querySelector('.rc-items');
       const rcActions = elements.rootCauseView.querySelector('.rc-actions');
       const rcFeedback = elements.rootCauseView.querySelector('.rc-feedback');
@@ -1537,7 +1624,7 @@
           
           // Set all content (except bot header) to invisible initially
           // Note: rcItems container stays visible, only its children animate
-          [rcAlert, rcBox, rcButton, rcLinks, rcActions, rcFeedback].forEach(el => {
+          [rcAlert, rcBox, rcButton, rcActions, rcFeedback].forEach(el => {
             if (el) gsap.set(el, { opacity: 0, y: 8, force3D: true });
           });
           // Ensure rc-items are built and visible, but children start invisible
@@ -1574,15 +1661,6 @@
       
       if (rcButton) {
         mainTimeline.to(rcButton, {
-          opacity: 1,
-          y: 0,
-          duration: 0.25,
-          ease: 'power1.out'
-        }, "+=0.05");
-      }
-      
-      if (rcLinks) {
-        mainTimeline.to(rcLinks, {
           opacity: 1,
           y: 0,
           duration: 0.25,
