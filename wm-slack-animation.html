@@ -1621,10 +1621,15 @@
         return shuffled;
       }
 
-      // Phase 2: switch to fetching with randomized order - start almost immediately
+      // Phase 2: switch to fetching - start right as last gray finishes loading
+      // Phase 1: 18 items * 0.1 stagger = 1.8s, last item starts at 1.7s, finishes at 2.0s
+      // Start first blue at 1.9s (right before last gray finishes) to signal change is coming
       const fetchingOrder = shuffleArray(itemElements.map((_, i) => i));
+      const phase1Duration = (TOTAL_ITEMS - 1) * 0.1 + 0.3; // Last item start + duration
       fetchingOrder.forEach((itemIndex, orderIndex) => {
-        const delay = orderIndex === 0 ? 0.05 : 0.04 + Math.random() * 0.08;
+        const delay = orderIndex === 0 
+          ? phase1Duration - 0.1  // Start first blue right before last gray finishes
+          : 0.03 + Math.random() * 0.06; // Quick succession after
         mainTimeline.call(() => {
           resetItemState(itemElements[itemIndex], 'fetching');
           // one-shot pulse when entering fetching
@@ -1713,8 +1718,8 @@
         }
       }, "+=0.6");
 
-      // Phase 6: cascade in root cause content section by section - snappy, immediate sequence
-      // Animate each section in sequence using timeline methods
+      // Phase 6: cascade in root cause content - wave effect with heavy overlap
+      // Start each next element before previous finishes for wave effect
       if (rcAlert) {
         mainTimeline.to(rcAlert, {
           opacity: 1,
@@ -1730,7 +1735,7 @@
           y: 0,
           duration: 0.25,
           ease: 'power1.out'
-        }, "+=0.05");
+        }, "-=0.12"); // Start 0.12s before rcAlert finishes (0.25 - 0.12 = overlap)
       }
       
       if (rcButton) {
@@ -1739,7 +1744,7 @@
           y: 0,
           duration: 0.25,
           ease: 'power1.out'
-        }, "+=0.05");
+        }, "-=0.12"); // Start before rcBox finishes
       }
       
       if (rcItems) {
@@ -1755,7 +1760,7 @@
             duration: 0.25,
             stagger: 0.02,
             ease: 'back.out(1.1)'
-          }, "+=0.05");
+          }, "-=0.12"); // Start before rcButton finishes
         } else {
           // If items haven't been built yet, ensure they're built and visible
           buildRootCauseStatic();
@@ -1771,7 +1776,7 @@
               duration: 0.25,
               stagger: 0.02,
               ease: 'back.out(1.1)'
-            }, "+=0.05");
+            }, "-=0.12");
           }
         }
       }
@@ -1782,7 +1787,7 @@
           y: 0,
           duration: 0.25,
           ease: 'power1.out'
-        }, "+=0.05");
+        }, "-=0.12"); // Start before rcItems finish
       }
       
       if (rcFeedback) {
@@ -1791,7 +1796,7 @@
           y: 0,
           duration: 0.25,
           ease: 'power1.out'
-        }, "+=0.05");
+        }, "-=0.12"); // Start before rcActions finish
       }
 
       // Phase 7: first card (right card) - start almost immediately after last rc-item
