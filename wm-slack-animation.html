@@ -20,7 +20,8 @@
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden; /* prevent scrollbars inside iframe */
+      overflow-y: hidden;   /* prevent vertical scrollbar */
+      overflow-x: visible;  /* allow side content (floating cards) to show */
     }
     
     body {
