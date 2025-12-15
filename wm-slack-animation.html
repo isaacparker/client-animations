@@ -182,38 +182,54 @@
       pointer-events: none;
     }
 
-    /* Stroke border trace effect */
-    .border-trace-svg {
+    /* Border trace overlay - clean CSS implementation */
+    .border-trace-overlay {
       position: absolute;
       inset: -1px;
-      width: 100%;
-      height: 100%;
+      border-radius: 17px;
+      padding: 2px;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        transparent 85%,
+        #F56630 92%,
+        rgba(245, 102, 48, 0.6) 96%,
+        rgba(245, 102, 48, 0.2) 98%,
+        transparent 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, 
+                    linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, 
+            linear-gradient(#fff 0 0);
+      mask-composite: exclude;
       pointer-events: none;
       z-index: 100;
-      border-radius: 16px;
+      opacity: 0;
+      will-change: transform, opacity;
     }
 
-    .border-trace-svg rect {
-      stroke-dasharray: 80 320;
-      stroke-dashoffset: 400;
-      stroke-linecap: round;
-      stroke-width: 1.5;
-      animation: traceBorder 1.6s linear forwards,
-                 traceFade 0.5s ease-in forwards 1.6s;
-      filter: drop-shadow(0 0 3px rgba(245, 102, 48, 0.3));
-      opacity: 1;
+    .border-trace-overlay.animating {
+      animation: borderTraceReveal 0.3s ease-out forwards,
+                 borderTraceRotate 2s linear 0.3s forwards,
+                 borderTraceFadeOut 0.5s ease-out 2.3s forwards;
     }
 
-    @keyframes traceBorder {
-      to {
-        stroke-dashoffset: -90;
-      }
+    @keyframes borderTraceReveal {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
-    @keyframes traceFade {
+    @keyframes borderTraceRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes borderTraceFadeOut {
       from { opacity: 1; }
       to { opacity: 0; }
     }
+
 
     /* Sidebar */
     .sidebar {
@@ -516,30 +532,69 @@
     .check-item.fetching { 
       background: #EFF6FF; 
       border: 1px solid #DBEAFE;
-      --pulse-color: rgba(59, 130, 246, 0.65);
-      --pulse-shadow: rgba(59, 130, 246, 0.25);
     }
     .check-item.analyzing { 
       background: #F5F3FF; 
       border: 1px solid #EDE9FE;
-      --pulse-color: rgba(139, 92, 246, 0.65);
-      --pulse-shadow: rgba(139, 92, 246, 0.25);
     }
     .check-item.complete { 
       background: #F0FDF4; 
       border: 1px solid #DCFCE7;
-      --pulse-color: rgba(34, 197, 94, 0.65);
-      --pulse-shadow: rgba(34, 197, 94, 0.25);
     }
 
-    @keyframes itemActivePulse {
-      0%, 100% {
-        border-color: var(--pulse-color, rgba(59, 130, 246, 0.65));
-        box-shadow: 0 0 0 0 var(--pulse-shadow, rgba(59, 130, 246, 0.25));
+    /* One-time pulse animations for each phase */
+    .check-item.pulse-fetching {
+      animation: fetchingPulse 0.8s ease-out forwards;
+    }
+    .check-item.pulse-analyzing {
+      animation: analyzingPulse 0.8s ease-out forwards;
+    }
+    .check-item.pulse-complete {
+      animation: completePulse 0.8s ease-out forwards;
+    }
+
+    @keyframes fetchingPulse {
+      0% {
+        border-color: #DBEAFE;
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
       }
       50% {
-        border-color: var(--pulse-color, rgba(59, 130, 246, 0.65));
-        box-shadow: 0 0 8px 0 var(--pulse-shadow, rgba(59, 130, 246, 0.25));
+        border-color: rgba(59, 130, 246, 0.8);
+        box-shadow: 0 0 12px 2px rgba(59, 130, 246, 0.4);
+      }
+      100% {
+        border-color: #DBEAFE;
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+      }
+    }
+
+    @keyframes analyzingPulse {
+      0% {
+        border-color: #EDE9FE;
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+      }
+      50% {
+        border-color: rgba(139, 92, 246, 0.8);
+        box-shadow: 0 0 12px 2px rgba(139, 92, 246, 0.4);
+      }
+      100% {
+        border-color: #EDE9FE;
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+      }
+    }
+
+    @keyframes completePulse {
+      0% {
+        border-color: #DCFCE7;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+      }
+      50% {
+        border-color: rgba(34, 197, 94, 0.8);
+        box-shadow: 0 0 12px 2px rgba(34, 197, 94, 0.4);
+      }
+      100% {
+        border-color: #DCFCE7;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
       }
     }
 
@@ -859,17 +914,8 @@
 
     <!-- Main Slack Window -->
     <div class="slack-window">
-      <!-- Animated stroke border trace -->
-      <svg class="border-trace-svg" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="96" height="96" rx="3" stroke="url(#borderGradient)" stroke-width="2" pathLength="100"/>
-        <defs>
-          <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:rgba(245, 102, 48, 1);stop-opacity:1" />
-            <stop offset="60%" style="stop-color:rgba(245, 102, 48, 0.35);stop-opacity:0.35" />
-            <stop offset="100%" style="stop-color:rgba(245, 102, 48, 0);stop-opacity:0" />
-          </linearGradient>
-        </defs>
-      </svg>
+      <!-- Border trace overlay -->
+      <div class="border-trace-overlay"></div>
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="slack-logo">
@@ -1323,8 +1369,18 @@
 
     function resetItemState(item, phase = 'waiting') {
       item.root.className = `check-item ${phase}`;
-      // clear any lingering one-shot pulse
-      item.root.style.animation = 'none';
+      
+      // Trigger one-shot pulse animation for phase transitions
+      if (phase === 'fetching') {
+        item.root.classList.add('pulse-fetching');
+        setTimeout(() => item.root.classList.remove('pulse-fetching'), 800);
+      } else if (phase === 'analyzing') {
+        item.root.classList.add('pulse-analyzing');
+        setTimeout(() => item.root.classList.remove('pulse-analyzing'), 800);
+      } else if (phase === 'complete') {
+        item.root.classList.add('pulse-complete');
+        setTimeout(() => item.root.classList.remove('pulse-complete'), 800);
+      }
 
       if (item.status) {
         // Strong status change: old scales up and fades out, new scales down and fades in
@@ -1416,12 +1472,12 @@
       }
 
       // Restart border trace animation on sequence restart
-      const borderRect = document.querySelector('.border-trace-svg rect');
-      if (borderRect) {
-        borderRect.style.animation = 'none';
+      const borderTrace = document.querySelector('.border-trace-overlay');
+      if (borderTrace) {
+        borderTrace.classList.remove('animating');
         // force reflow to restart animation
-        void borderRect.offsetWidth;
-        borderRect.style.animation = 'traceBorder 1.6s ease-out forwards, traceFade 0.5s ease-in forwards 1.6s';
+        void borderTrace.offsetWidth;
+        borderTrace.classList.add('animating');
       }
 
       elements.processingView.style.display = 'block';
