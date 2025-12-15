@@ -18,19 +18,19 @@
     }
 
     html, body {
-      overflow: hidden;
-      height: 100%;
+      overflow-x: hidden; /* prevent horizontal scrollbars */
+    }
+    
+    html {
+      overflow-y: auto; /* allow vertical scrolling when needed */
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
       background-color: #E7EDEF;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 52px 26px;
-      overflow: hidden;
+      display: block; /* avoid flex centering that can clip in iframes */
+      padding: 32px 20px; /* reduce padding to avoid top clipping */
     }
 
     .container {
@@ -1266,6 +1266,20 @@
       }
     }
 
+    function updateMinHeight() {
+      const container = document.querySelector('.container');
+      if (!container) return;
+
+      const bodyStyle = window.getComputedStyle(document.body);
+      const paddingTop = parseFloat(bodyStyle.paddingTop) || 0;
+      const paddingBottom = parseFloat(bodyStyle.paddingBottom) || 0;
+      const contentHeight = container.offsetHeight + paddingTop + paddingBottom;
+      const minHeight = Math.max(contentHeight, window.innerHeight);
+
+      document.body.style.minHeight = `${minHeight}px`;
+      document.documentElement.style.height = 'auto';
+    }
+
     function buildStaticItems() {
       if (!elements.itemsList || itemElements.length) return;
       const fragment = document.createDocumentFragment();
@@ -1509,6 +1523,7 @@
       buildStaticItems();
       buildRootCauseStatic();
       setCardBaseHeights();
+      updateMinHeight();
       resetAllState();
       animateLoadingDots();
       
@@ -1834,11 +1849,17 @@
       try {
         setupVisibilityControls();
         runAnimation();
+        updateMinHeight();
       } catch (error) {
         console.error('Animation setup error:', error);
         embedIsInView = true;
         runAnimation();
+        updateMinHeight();
       }
+    });
+
+    window.addEventListener('resize', () => {
+      updateMinHeight();
     });
   </script>
 </body>
