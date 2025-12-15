@@ -516,28 +516,36 @@
     .check-item.fetching { 
       background: #EFF6FF; 
       border: 1px solid #DBEAFE;
+      --pulse-color: rgba(59, 130, 246, 0.65);
+      --pulse-shadow: rgba(59, 130, 246, 0.25);
       animation: itemActivePulse 2s ease-in-out infinite;
       will-change: border-color, box-shadow;
     }
     .check-item.analyzing { 
       background: #F5F3FF; 
       border: 1px solid #EDE9FE;
+      --pulse-color: rgba(139, 92, 246, 0.65);
+      --pulse-shadow: rgba(139, 92, 246, 0.25);
       animation: itemActivePulse 2s ease-in-out infinite;
       will-change: border-color, box-shadow;
     }
     .check-item.complete { 
       background: #F0FDF4; 
       border: 1px solid #DCFCE7;
+      --pulse-color: rgba(34, 197, 94, 0.65);
+      --pulse-shadow: rgba(34, 197, 94, 0.25);
+      animation: itemActivePulse 2s ease-in-out infinite;
+      will-change: border-color, box-shadow;
     }
 
     @keyframes itemActivePulse {
       0%, 100% {
-        border-color: currentColor;
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        border-color: var(--pulse-color, rgba(59, 130, 246, 0.65));
+        box-shadow: 0 0 0 0 var(--pulse-shadow, rgba(59, 130, 246, 0.25));
       }
       50% {
-        border-color: rgba(59, 130, 246, 0.6);
-        box-shadow: 0 0 8px 0 rgba(59, 130, 246, 0.2);
+        border-color: var(--pulse-color, rgba(59, 130, 246, 0.65));
+        box-shadow: 0 0 8px 0 var(--pulse-shadow, rgba(59, 130, 246, 0.25));
       }
     }
 
