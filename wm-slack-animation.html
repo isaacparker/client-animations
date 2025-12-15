@@ -1621,9 +1621,7 @@
         return shuffled;
       }
 
-      // Phase 2: switch to fetching - start right as last gray finishes loading
-      // Phase 1: 18 items * 0.1 stagger = 1.8s, last item starts at 1.7s, finishes at 2.0s
-      // Start first blue at 1.9s (right before last gray finishes) to signal change is coming
+      // Phase 2: switch to fetching - start IMMEDIATELY while grays are still loading
       // IMPORTANT: First blue must be in top 3 visible items so users see it immediately
       const allIndices = itemElements.map((_, i) => i);
       const topVisibleIndices = [0, 1, 2]; // First 3 items are always visible
@@ -1632,11 +1630,12 @@
       const shuffledRemaining = shuffleArray(remainingIndices);
       const fetchingOrder = [firstBlueIndex, ...shuffledRemaining];
       
-      const phase1Duration = (TOTAL_ITEMS - 1) * 0.1 + 0.3; // Last item start + duration
+      // Start first blue immediately after just a few grays load (0.6s = after ~6 grays)
+      // Then stagger the rest more gradually for async feel
       fetchingOrder.forEach((itemIndex, orderIndex) => {
         const delay = orderIndex === 0 
-          ? phase1Duration - 0.1  // Start first blue right before last gray finishes
-          : 0.03 + Math.random() * 0.06; // Quick succession after
+          ? 0.6  // Start first blue IMMEDIATELY while grays are still loading
+          : 0.12 + Math.random() * 0.15; // More staggered/async (0.12-0.27s between each)
         mainTimeline.call(() => {
           resetItemState(itemElements[itemIndex], 'fetching');
           // one-shot pulse when entering fetching
