@@ -285,6 +285,7 @@
       overflow: hidden;
       flex-shrink: 0;
       background: linear-gradient(135deg, #C5E3E9, #08363F);
+      border: 1px solid #08363F;
       position: relative;
       animation: avatarGlow 3s ease-in-out infinite;
       will-change: box-shadow;
@@ -367,8 +368,17 @@
     .loading-dot {
       width: 4px;
       height: 4px;
-      background: #6B7280;
+      background: #3B82F6;
       border-radius: 50%;
+      transition: background-color 0.3s ease;
+    }
+
+    .loading-dots.analyzing .loading-dot {
+      background: #8B5CF6;
+    }
+
+    .loading-dots.complete .loading-dot {
+      background: #22C55E;
     }
 
     /* Dots animation (CSS-driven: cheaper than many GSAP repeat loops) */
@@ -1430,6 +1440,10 @@
       }
 
       elements.statusText.textContent = 'Collecting evidence from data sources';
+      const statusDots = document.getElementById('status-dots');
+      if (statusDots) {
+        statusDots.classList.remove('analyzing', 'complete');
+      }
 
       if (elements.cardRight) {
         elements.cardRight.classList.remove('shadow-final');
@@ -1553,6 +1567,11 @@
       // Phase 3: switch to analyzing with randomized order
       mainTimeline.call(() => {
         elements.statusText.textContent = 'Analyzing data from enrichment sources';
+        const statusDots = document.getElementById('status-dots');
+        if (statusDots) {
+          statusDots.classList.remove('complete');
+          statusDots.classList.add('analyzing');
+        }
       }, null, '+=0.4');
 
       const analyzingOrder = shuffleArray(itemElements.map((_, i) => i));
@@ -1566,6 +1585,11 @@
       // Phase 4: complete items + progress with randomized order
       mainTimeline.call(() => {
         elements.statusText.textContent = 'Alert Enrichment Ready';
+        const statusDots = document.getElementById('status-dots');
+        if (statusDots) {
+          statusDots.classList.remove('analyzing');
+          statusDots.classList.add('complete');
+        }
       }, null, '+=0.4');
 
       const completeOrder = shuffleArray(itemElements.map((_, i) => i));
