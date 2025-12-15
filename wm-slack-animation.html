@@ -20,7 +20,7 @@
     html, body {
       margin: 0;
       padding: 0;
-      overflow-y: hidden;   /* prevent vertical scrollbar */
+      overflow-y: visible;  /* allow natural vertical growth */
       overflow-x: visible;  /* allow side content (floating cards) to show */
     }
     
@@ -285,9 +285,8 @@
 
     .chat-content {
       padding: 12px;
-      height: 520px;
-      overflow: hidden;
       position: relative;
+      overflow: visible;
     }
     
     .root-cause-screen.active {
