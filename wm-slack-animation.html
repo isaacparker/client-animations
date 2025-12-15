@@ -7,6 +7,10 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/TextPlugin.min.js"></script>
   <style>
+    :root {
+      --gradient-top-color: #e5e5e5;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -54,7 +58,7 @@
       left: 0;
       right: 0;
       height: 20%;
-      background: linear-gradient(to bottom, #efedf0, transparent);
+      background: linear-gradient(to bottom, var(--gradient-top-color), transparent);
       z-index: 1;
       pointer-events: none;
       border-radius: 10.917px 10.917px 0 0;
@@ -175,7 +179,7 @@
       left: 0;
       right: 0;
       height: 20%;
-      background: linear-gradient(to bottom, #ebe8ec, transparent);
+      background: linear-gradient(to bottom, var(--gradient-top-color), transparent);
       z-index: 10;
       pointer-events: none;
     }
