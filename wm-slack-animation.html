@@ -1621,20 +1621,25 @@
         return shuffled;
       }
 
-      // Phase 2: switch to fetching - start IMMEDIATELY while grays are still loading
-      // IMPORTANT: First blue must be in top 3 visible items so users see it immediately
+      // Phase 2: switch to fetching - start right as gray list is almost finished loading
+      // Phase 1: 18 items * 0.1 stagger = 1.8s, last item starts at 1.7s, finishes at 2.0s
+      // Start 1-2 blues at 1.7s (right when last grays are appearing/finishing)
       const allIndices = itemElements.map((_, i) => i);
       const topVisibleIndices = [0, 1, 2]; // First 3 items are always visible
       const firstBlueIndex = topVisibleIndices[Math.floor(Math.random() * topVisibleIndices.length)];
-      const remainingIndices = allIndices.filter(i => i !== firstBlueIndex);
+      const secondBlueIndex = topVisibleIndices.filter(i => i !== firstBlueIndex)[Math.floor(Math.random() * (topVisibleIndices.length - 1))];
+      const remainingIndices = allIndices.filter(i => i !== firstBlueIndex && i !== secondBlueIndex);
       const shuffledRemaining = shuffleArray(remainingIndices);
-      const fetchingOrder = [firstBlueIndex, ...shuffledRemaining];
+      const fetchingOrder = [firstBlueIndex, secondBlueIndex, ...shuffledRemaining];
       
-      // Start first blue immediately after just a few grays load (0.6s = after ~6 grays)
+      // Start first 1-2 blues right as gray list is almost finished (1.7s = when last grays appear)
       // Then stagger the rest more gradually for async feel
+      const phase1AlmostDone = (TOTAL_ITEMS - 1) * 0.1; // When last gray starts appearing (1.7s)
       fetchingOrder.forEach((itemIndex, orderIndex) => {
         const delay = orderIndex === 0 
-          ? 0.6  // Start first blue IMMEDIATELY while grays are still loading
+          ? phase1AlmostDone  // First blue right as last grays appear (1.7s)
+          : orderIndex === 1
+          ? 0.05  // Second blue almost immediately after (1.75s)
           : 0.12 + Math.random() * 0.15; // More staggered/async (0.12-0.27s between each)
         mainTimeline.call(() => {
           resetItemState(itemElements[itemIndex], 'fetching');
