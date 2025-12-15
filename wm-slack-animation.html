@@ -182,50 +182,32 @@
       pointer-events: none;
     }
 
-    /* Border trace overlay - clean CSS implementation */
-    .border-trace-overlay {
+    /* Simple border trace - SVG approach */
+    .border-trace-svg {
       position: absolute;
-      inset: -1px;
-      border-radius: 17px;
-      padding: 2px;
-      background: conic-gradient(
-        from 0deg,
-        transparent 0%,
-        transparent 85%,
-        #F56630 92%,
-        rgba(245, 102, 48, 0.6) 96%,
-        rgba(245, 102, 48, 0.2) 98%,
-        transparent 100%
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, 
-                    linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask: linear-gradient(#fff 0 0) content-box, 
-            linear-gradient(#fff 0 0);
-      mask-composite: exclude;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 100;
       opacity: 0;
-      will-change: transform, opacity;
     }
 
-    .border-trace-overlay.animating {
-      animation: borderTraceReveal 0.3s ease-out forwards,
-                 borderTraceRotate 2s linear 0.3s forwards,
-                 borderTraceFadeOut 0.5s ease-out 2.3s forwards;
+    .border-trace-svg.animating rect {
+      stroke-dasharray: 2400;
+      stroke-dashoffset: 2400;
+      animation: traceBorder 2s ease-out forwards,
+                 traceFadeOut 0.4s ease-out 2s forwards;
     }
 
-    @keyframes borderTraceReveal {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    @keyframes traceBorder {
+      to {
+        stroke-dashoffset: 0;
+      }
     }
 
-    @keyframes borderTraceRotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes borderTraceFadeOut {
+    @keyframes traceFadeOut {
       from { opacity: 1; }
       to { opacity: 0; }
     }
@@ -914,8 +896,10 @@
 
     <!-- Main Slack Window -->
     <div class="slack-window">
-      <!-- Border trace overlay -->
-      <div class="border-trace-overlay"></div>
+      <!-- Border trace SVG -->
+      <svg class="border-trace-svg" viewBox="0 0 720 544" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="718" height="542" rx="16" stroke="#F56630" stroke-width="2"/>
+      </svg>
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="slack-logo">
@@ -1472,12 +1456,14 @@
       }
 
       // Restart border trace animation on sequence restart
-      const borderTrace = document.querySelector('.border-trace-overlay');
+      const borderTrace = document.querySelector('.border-trace-svg');
       if (borderTrace) {
         borderTrace.classList.remove('animating');
+        borderTrace.style.opacity = '0';
         // force reflow to restart animation
         void borderTrace.offsetWidth;
         borderTrace.classList.add('animating');
+        borderTrace.style.opacity = '1';
       }
 
       elements.processingView.style.display = 'block';
