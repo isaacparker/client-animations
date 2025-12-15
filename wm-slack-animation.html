@@ -158,6 +158,50 @@
       z-index: 10;
     }
 
+    /* Rotating glow effect behind window */
+    .slack-window-glow {
+      position: absolute;
+      inset: -60px;
+      border-radius: 16px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9;
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        transparent 0deg,
+        transparent 60deg,
+        rgba(245, 102, 48, 0.4) 90deg,
+        rgba(255, 165, 0, 0.5) 120deg,
+        rgba(245, 102, 48, 0.3) 150deg,
+        transparent 180deg,
+        transparent 360deg
+      );
+      filter: blur(40px);
+      mix-blend-mode: screen;
+    }
+
+    .slack-window-glow.active {
+      animation: glowTrace 2.5s ease-in-out forwards;
+    }
+
+    @keyframes glowTrace {
+      0% {
+        opacity: 0;
+        transform: rotate(0deg);
+      }
+      10% {
+        opacity: 0.8;
+      }
+      90% {
+        opacity: 0.8;
+        transform: rotate(360deg);
+      }
+      100% {
+        opacity: 0;
+        transform: rotate(360deg);
+      }
+    }
+
     .slack-window::before {
       content: "";
       position: absolute;
@@ -864,6 +908,7 @@
     </div>
 
     <!-- Main Slack Window -->
+    <div class="slack-window-glow" id="window-glow"></div>
     <div class="slack-window">
       <!-- Sidebar -->
       <div class="sidebar">
@@ -1414,6 +1459,14 @@
 
     function resetAllState() {
       processedCount = 0;
+      
+      // Trigger glow trace animation at start of each sequence
+      const windowGlow = document.getElementById('window-glow');
+      if (windowGlow) {
+        windowGlow.classList.remove('active');
+        void windowGlow.offsetWidth; // force reflow
+        windowGlow.classList.add('active');
+      }
       
       // Clear data source assignments for fresh randomization
       for (let key in itemDataSources) {
