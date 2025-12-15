@@ -185,7 +185,7 @@
     /* Stroke border trace effect */
     .border-trace-svg {
       position: absolute;
-      inset: 0;
+      inset: -1px;
       width: 100%;
       height: 100%;
       pointer-events: none;
@@ -194,12 +194,13 @@
     }
 
     .border-trace-svg rect {
-      stroke-dasharray: 120 160;
-      stroke-dashoffset: 280;
+      stroke-dasharray: 90 150;
+      stroke-dashoffset: 240;
       stroke-linecap: round;
+      stroke-width: 2;
       animation: traceBorder 1.6s ease-out forwards,
-                 traceFade 0.6s ease-in forwards 1.6s;
-      filter: drop-shadow(0 0 6px rgba(245, 102, 48, 0.35));
+                 traceFade 0.5s ease-in forwards 1.6s;
+      filter: drop-shadow(0 0 4px rgba(245, 102, 48, 0.3));
       opacity: 1;
     }
 
@@ -858,7 +859,7 @@
     <div class="slack-window">
       <!-- Animated stroke border trace -->
       <svg class="border-trace-svg" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1.5" y="1.5" width="97" height="97" rx="2.5" stroke="url(#borderGradient)" stroke-width="3" pathLength="100"/>
+        <rect x="2" y="2" width="96" height="96" rx="3" stroke="url(#borderGradient)" stroke-width="2" pathLength="100"/>
         <defs>
           <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" style="stop-color:rgba(245, 102, 48, 1);stop-opacity:1" />
@@ -1408,6 +1409,15 @@
       // Clear data source assignments for fresh randomization
       for (let key in itemDataSources) {
         delete itemDataSources[key];
+      }
+
+      // Restart border trace animation on sequence restart
+      const borderRect = document.querySelector('.border-trace-svg rect');
+      if (borderRect) {
+        borderRect.style.animation = 'none';
+        // force reflow to restart animation
+        void borderRect.offsetWidth;
+        borderRect.style.animation = 'traceBorder 1.6s ease-out forwards, traceFade 0.5s ease-in forwards 1.6s';
       }
 
       elements.processingView.style.display = 'block';
