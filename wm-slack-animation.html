@@ -662,7 +662,7 @@
     .rc-alert {
       font-size: 12px;
       color: #4B5563;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .rc-alert-id {
@@ -672,9 +672,9 @@
     .rc-box {
       background: #F9FAFB;
       border-left: 4px solid #9CA3AF;
-      padding: 10px;
+      padding: 16px;
       border-radius: 4px;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       position: relative;
       overflow: hidden;
     }
@@ -721,13 +721,13 @@
       font-size: 14px;
       font-weight: 600;
       color: #111827;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
     }
 
     .rc-text {
       font-size: 12px;
       color: #374151;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     .rc-text code {
@@ -746,7 +746,7 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .rc-button:hover {
@@ -754,7 +754,7 @@
     }
 
     .rc-items {
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .rc-item {
@@ -762,7 +762,7 @@
       align-items: center;
       gap: 4px;
       font-size: 12px;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
 
     .rc-item-label {
@@ -792,7 +792,7 @@
     .rc-actions {
       display: flex;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .rc-action-btn {
@@ -991,12 +991,6 @@
             <div class="rc-actions">
               <button class="rc-action-btn">Run Again</button>
               <button class="rc-action-btn">Re-analyze</button>
-            </div>
-
-            <div class="rc-feedback">
-              <button class="rc-feedback-btn">👍 Correct</button>
-              <button class="rc-feedback-btn">🤚 Halfway</button>
-              <button class="rc-feedback-btn">👎 Wrong</button>
             </div>
           </div>
         </div>
@@ -1437,10 +1431,9 @@
         const rcButton = elements.rootCauseView.querySelector('.rc-button');
         const rcItems = elements.rootCauseView.querySelector('.rc-items');
         const rcActions = elements.rootCauseView.querySelector('.rc-actions');
-        const rcFeedback = elements.rootCauseView.querySelector('.rc-feedback');
         
         // Set content to invisible (rcItems container stays visible, children animate)
-        [rcAlert, rcBox, rcButton, rcActions, rcFeedback].forEach(el => {
+        [rcAlert, rcBox, rcButton, rcActions].forEach(el => {
           if (el) gsap.set(el, { opacity: 0, y: 8, force3D: true });
         });
         if (rcBox) {
@@ -1625,7 +1618,6 @@
       const rcButton = elements.rootCauseView.querySelector('.rc-button');
       const rcItems = elements.rootCauseView.querySelector('.rc-items');
       const rcActions = elements.rootCauseView.querySelector('.rc-actions');
-      const rcFeedback = elements.rootCauseView.querySelector('.rc-feedback');
       
       mainTimeline.to(elements.processingView, {
         opacity: 0,
@@ -1646,7 +1638,7 @@
           
           // Set all content (except bot header) to invisible initially
           // Note: rcItems container stays visible, only its children animate
-          [rcAlert, rcBox, rcButton, rcActions, rcFeedback].forEach(el => {
+          [rcAlert, rcBox, rcButton, rcActions].forEach(el => {
             if (el) gsap.set(el, { opacity: 0, y: 8, force3D: true });
           });
           // Ensure rc-items are built and visible, but children start invisible
@@ -1737,15 +1729,6 @@
           ease: 'power1.out'
         }, "-=0.12"); // Start before rcItems finish
       }
-      
-      if (rcFeedback) {
-        mainTimeline.to(rcFeedback, {
-          opacity: 1,
-          y: 0,
-          duration: 0.25,
-          ease: 'power1.out'
-        }, "-=0.12"); // Start before rcActions finish
-      }
 
       // Phase 7: first card (right card) - start almost immediately after last rc-item
       mainTimeline.to(elements.cardRight, {
@@ -1756,7 +1739,7 @@
         duration: 0.7,
         ease: "back.out(1.2)",
         onComplete: () => elements.cardRight.classList.add('shadow-final')
-      }, "-=0.15"); // Start before rcFeedback finishes, overlapping with last items
+      }, "-=0.15"); // Start before rcActions finishes, overlapping with last items
       
       // Animate card header (profile block) in first
       const cardRightHeader = elements.cardRight.querySelector('.card-header');
