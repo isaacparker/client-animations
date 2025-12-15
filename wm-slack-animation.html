@@ -192,13 +192,14 @@
       pointer-events: none;
       z-index: 100;
       opacity: 0;
+      overflow: visible;
     }
 
     .border-trace-svg.animating rect {
-      stroke-dasharray: 2400;
+      stroke-dasharray: 200 2200;
       stroke-dashoffset: 2400;
-      animation: traceBorder 2s ease-out forwards,
-                 traceFadeOut 0.4s ease-out 2s forwards;
+      animation: traceBorder 2.2s linear forwards,
+                 traceFadeOut 0.4s ease-out 2.2s forwards;
     }
 
     @keyframes traceBorder {
@@ -897,8 +898,8 @@
     <!-- Main Slack Window -->
     <div class="slack-window">
       <!-- Border trace SVG -->
-      <svg class="border-trace-svg" viewBox="0 0 720 544" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="1" width="718" height="542" rx="16" stroke="#F56630" stroke-width="2"/>
+      <svg class="border-trace-svg" width="720" height="544" viewBox="0 0 720 544" fill="none" xmlns="http://www.w3.org/2000/svg" style="position: absolute; top: 0; left: 0;">
+        <rect x="1" y="1" width="718" height="542" rx="15" stroke="#F56630" stroke-width="2" fill="none"/>
       </svg>
       <!-- Sidebar -->
       <div class="sidebar">
