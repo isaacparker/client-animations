@@ -42,6 +42,7 @@
       contain: layout style;
       overflow: visible; /* allow shadows to render fully */
       padding: 0;
+      height: fit-content;
     }
 
     /* Floating Cards */
@@ -170,9 +171,10 @@
     /* Main Window */
     .slack-window {
       width: 860px;
+      height: 746px;
       margin: 0 auto;
       background: white;
-      border-radius: 20px;
+      border-radius: 20px 20px 0px 0px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       display: flex;
       overflow: hidden;
@@ -248,12 +250,16 @@
       min-width: 0;
       position: relative;
       z-index: 20;
+      padding-bottom: 16px;
     }
 
     .header {
       background: transparent;
       border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-      padding: 10px 16px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      padding-left: 16px;
+      padding-right: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -287,6 +293,7 @@
       padding: 12px;
       position: relative;
       overflow: visible;
+      margin-bottom: 16px;
     }
     
     .root-cause-screen.active {
@@ -431,11 +438,12 @@
     /* Items Container */
     .items-container {
       position: relative;
-      height: 400px;
+      height: 660px;
       background: white;
       border: 1px solid #F3F4F6;
       border-radius: 5px;
-      overflow: hidden;
+      overflow-y: visible;
+      overflow-x: hidden;
       contain: layout style paint;
       will-change: transform;
     }
@@ -465,21 +473,11 @@
       50%, 100% { transform: translateX(100%); }
     }
 
-    .items-fade-bottom {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 62px;
-      background: linear-gradient(to top, white, transparent);
-      z-index: 20;
-      pointer-events: none;
-    }
-
     .items-list {
       position: absolute;
       inset: 0;
       padding: 10px 16px;
+      height: 100px;
     }
 
     .check-item {
@@ -957,7 +955,6 @@
             </div>
 
             <div class="items-container">
-              <div class="items-fade-bottom"></div>
               <div class="items-list" id="items-list"></div>
             </div>
           </div>
