@@ -344,9 +344,9 @@
       position: relative;
       background: linear-gradient(90deg, 
         #6B7280 0%, 
-        #3B82F6 30%, 
+        #1F2937 30%, 
         #9CA3AF 50%, 
-        #3B82F6 70%, 
+        #1F2937 70%, 
         #6B7280 100%
       );
       background-size: 300% 100%;
@@ -1562,10 +1562,10 @@
         return shuffled;
       }
 
-      // Phase 2: switch to fetching with randomized order
+      // Phase 2: switch to fetching with randomized order - start almost immediately
       const fetchingOrder = shuffleArray(itemElements.map((_, i) => i));
       fetchingOrder.forEach((itemIndex, orderIndex) => {
-        const delay = orderIndex === 0 ? 0.35 : 0.08 + Math.random() * 0.15;
+        const delay = orderIndex === 0 ? 0.05 : 0.04 + Math.random() * 0.08;
         mainTimeline.call(() => {
           resetItemState(itemElements[itemIndex], 'fetching');
           // one-shot pulse when entering fetching
