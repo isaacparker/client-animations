@@ -25,7 +25,7 @@
 
     .container {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       position: relative;
       contain: layout style;
@@ -66,13 +66,13 @@
     }
 
     .floating-card.right {
-      right: 3%;
+      right: 0;
       bottom: 25%;
       width: 300px;
     }
 
     .floating-card.left {
-      left: 3%;
+      left: 0;
       bottom: 15%;
       width: 300px;
     }
@@ -144,68 +144,15 @@
 
     /* Main Window */
     .slack-window {
-      width: 720px;
+      width: 900px;
       margin: 0 auto;
       background: white;
       border-radius: 16px;
-      border-top-left-radius: 16px;
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-      border-bottom-left-radius: 16px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       display: flex;
       overflow: hidden;
       position: relative;
       z-index: 10;
-    }
-
-    /* Rotating glow effect - tight edge trace */
-    .slack-window-glow {
-      position: absolute;
-      top: -8px;
-      left: -8px;
-      width: calc(100% + 16px);
-      height: calc(100% + 16px);
-      border-radius: 24px;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 9;
-      background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        transparent 70deg,
-        #F56630 85deg,
-        #FF8C42 90deg,
-        #FFB347 95deg,
-        #F56630 100deg,
-        transparent 110deg,
-        transparent 360deg
-      );
-      filter: blur(12px);
-      mask: radial-gradient(ellipse 95% 95% at center, transparent 60%, black 100%);
-      -webkit-mask: radial-gradient(ellipse 95% 95% at center, transparent 60%, black 100%);
-    }
-
-    .slack-window-glow.active {
-      animation: glowTrace 2s ease-out forwards;
-    }
-
-    @keyframes glowTrace {
-      0% {
-        opacity: 0;
-        transform: rotate(0deg) scale(1);
-      }
-      5% {
-        opacity: 1;
-      }
-      95% {
-        opacity: 1;
-        transform: rotate(360deg) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: rotate(360deg) scale(1);
-      }
     }
 
     .slack-window::before {
@@ -484,18 +431,6 @@
       50%, 100% { transform: translateX(100%); }
     }
 
-    .items-fade-top {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 48px;
-      background: transparent;
-      z-index: 20;
-      pointer-events: none;
-      display: none;
-    }
-
     .items-fade-bottom {
       position: absolute;
       bottom: 0;
@@ -745,6 +680,46 @@
       padding: 10px;
       border-radius: 4px;
       margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rc-box::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(99, 102, 241, 0.12) 40%,
+        rgba(16, 185, 129, 0.12) 60%,
+        rgba(59, 130, 246, 0.12) 80%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: translateX(-120%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .rc-box.shimmer-once::after {
+      animation: rcShimmer 1.6s ease-out forwards;
+    }
+
+    @keyframes rcShimmer {
+      0% {
+        transform: translateX(-120%);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      60% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(120%);
+        opacity: 0;
+      }
     }
 
     .rc-title {
@@ -914,7 +889,6 @@
     </div>
 
     <!-- Main Slack Window -->
-    <div class="slack-window-glow" id="window-glow"></div>
     <div class="slack-window">
       <!-- Sidebar -->
       <div class="sidebar">
@@ -981,7 +955,6 @@
             </div>
 
             <div class="items-container">
-              <div class="items-fade-top"></div>
               <div class="items-fade-bottom"></div>
               <div class="items-list" id="items-list"></div>
             </div>
@@ -1048,7 +1021,6 @@
     if (window.gsap && window.TextPlugin) {
       gsap.registerPlugin(TextPlugin);
     }
-    gsap.registerPlugin(TextPlugin);
 
     const TOTAL_ITEMS = 18;
     const itemLabels = [
@@ -1107,8 +1079,6 @@
 
     let mainTimeline;
     let processedCount = 0;
-    let loadingDotsAnimation;
-    let itemDotsAnimations = [];
     const itemElements = [];
     
     // Cache DOM elements for performance
@@ -1296,23 +1266,6 @@
       elements.rcItems = document.getElementById('rc-items');
     }
 
-    function measureCardHeight(cardEl, finalText) {
-      if (!cardEl) return 0;
-      const clone = cardEl.cloneNode(true);
-      clone.style.position = 'absolute';
-      clone.style.left = '-9999px';
-      clone.style.top = '-9999px';
-      clone.style.opacity = '0';
-      clone.style.transform = 'none';
-      clone.style.minHeight = 'auto';
-      const textSpan = clone.querySelector('.card-text span');
-      if (textSpan) textSpan.textContent = finalText;
-      document.body.appendChild(clone);
-      const height = clone.offsetHeight;
-      document.body.removeChild(clone);
-      return height;
-    }
-
     // Ensure cards reserve their final height so the type animation doesn't grow them
     function setCardBaseHeights() {
       if (!elements.cardRight || !elements.cardLeft) return;
@@ -1368,16 +1321,22 @@
     }
 
     function resetItemState(item, phase = 'waiting') {
+      // Remove any existing pulse classes first
+      item.root.classList.remove('pulse-fetching', 'pulse-analyzing', 'pulse-complete');
       item.root.className = `check-item ${phase}`;
       
       // Trigger one-shot pulse animation for phase transitions
+      // Force reflow to ensure animation restarts
       if (phase === 'fetching') {
+        void item.root.offsetWidth;
         item.root.classList.add('pulse-fetching');
         setTimeout(() => item.root.classList.remove('pulse-fetching'), 800);
       } else if (phase === 'analyzing') {
+        void item.root.offsetWidth;
         item.root.classList.add('pulse-analyzing');
         setTimeout(() => item.root.classList.remove('pulse-analyzing'), 800);
       } else if (phase === 'complete') {
+        void item.root.offsetWidth;
         item.root.classList.add('pulse-complete');
         setTimeout(() => item.root.classList.remove('pulse-complete'), 800);
       }
@@ -1466,18 +1425,8 @@
     function resetAllState() {
       processedCount = 0;
       
-      // Trigger glow trace animation at start of each sequence
-      const windowGlow = document.getElementById('window-glow');
-      if (windowGlow) {
-        windowGlow.classList.remove('active');
-        void windowGlow.offsetWidth; // force reflow
-        windowGlow.classList.add('active');
-      }
-      
       // Clear data source assignments for fresh randomization
-      for (let key in itemDataSources) {
-        delete itemDataSources[key];
-      }
+      Object.keys(itemDataSources).forEach((key) => delete itemDataSources[key]);
 
       elements.processingView.style.display = 'block';
       gsap.set(elements.processingView, { opacity: 1, force3D: true });
@@ -1517,6 +1466,9 @@
         [rcAlert, rcBox, rcButton, rcActions, rcFeedback].forEach(el => {
           if (el) gsap.set(el, { opacity: 0, y: 8, force3D: true });
         });
+        if (rcBox) {
+          rcBox.classList.remove('shimmer-once');
+        }
         // rcItems container visible, but its children start invisible
         if (rcItems) {
           gsap.set(rcItems, { opacity: 1, y: 0, force3D: true });
@@ -1562,6 +1514,10 @@
       if (elements.cardLeftReaction) gsap.set(elements.cardLeftReaction, { opacity: 0 });
 
       itemElements.forEach((item) => {
+        // Clear any inline animation and pulse classes from previous cycle
+        item.root.style.animation = '';
+        item.root.classList.remove('pulse-fetching', 'pulse-analyzing', 'pulse-complete');
+        
         gsap.set(item.root, { opacity: 0, y: 20, scale: 1.15, force3D: true });
         if (item.status) {
           gsap.set(item.status, { scale: 1, opacity: 1, force3D: true });
@@ -1621,9 +1577,8 @@
         return shuffled;
       }
 
-      // Phase 2: switch to fetching - start right as gray list is almost finished loading
-      // Phase 1: 18 items * 0.1 stagger = 1.8s, last item starts at 1.7s, finishes at 2.0s
-      // Start 1-2 blues at 1.7s (right when last grays are appearing/finishing)
+      // Phase 2: switch to fetching - start EARLY while grays are still loading
+      // Use ABSOLUTE time positions so blues appear while grays are still animating
       const allIndices = itemElements.map((_, i) => i);
       const topVisibleIndices = [0, 1, 2]; // First 3 items are always visible
       const firstBlueIndex = topVisibleIndices[Math.floor(Math.random() * topVisibleIndices.length)];
@@ -1632,20 +1587,20 @@
       const shuffledRemaining = shuffleArray(remainingIndices);
       const fetchingOrder = [firstBlueIndex, secondBlueIndex, ...shuffledRemaining];
       
-      // Start first 1-2 blues right as gray list is almost finished (1.7s = when last grays appear)
-      // Then stagger the rest more gradually for async feel
-      const phase1AlmostDone = (TOTAL_ITEMS - 1) * 0.1; // When last gray starts appearing (1.7s)
+      // First few blues come in slowly, then rest come rapidly
+      let blueTime = 0.5; // Start first blue at 0.5s absolute
       fetchingOrder.forEach((itemIndex, orderIndex) => {
-        const delay = orderIndex === 0 
-          ? phase1AlmostDone  // First blue right as last grays appear (1.7s)
-          : orderIndex === 1
-          ? 0.05  // Second blue almost immediately after (1.75s)
-          : 0.12 + Math.random() * 0.15; // More staggered/async (0.12-0.27s between each)
+        const time = blueTime;
         mainTimeline.call(() => {
           resetItemState(itemElements[itemIndex], 'fetching');
-          // one-shot pulse when entering fetching
-          itemElements[itemIndex].root.style.animation = 'itemActivePulse 1s ease-out 1 forwards';
-        }, null, `+=${delay}`);
+        }, null, time);
+        
+        // Slower for first 4, then rapid for the rest
+        if (orderIndex < 4) {
+          blueTime += 0.25 + Math.random() * 0.15; // Slower: 0.25-0.4s gaps
+        } else {
+          blueTime += 0.06 + Math.random() * 0.08; // Rapid: 0.06-0.14s gaps
+        }
       });
 
       // Phase 3: switch to analyzing with randomized order
@@ -1658,8 +1613,6 @@
         const delay = orderIndex === 0 ? 0.2 : 0.06 + Math.random() * 0.12;
         mainTimeline.call(() => {
           resetItemState(itemElements[itemIndex], 'analyzing');
-          // one-shot pulse when entering analyzing
-          itemElements[itemIndex].root.style.animation = 'itemActivePulse 1s ease-out 1 forwards';
         }, null, `+=${delay}`);
       });
 
@@ -1741,6 +1694,11 @@
       }
       
       if (rcBox) {
+        // Trigger shimmer once as it comes in
+        mainTimeline.call(() => {
+          rcBox.classList.remove('shimmer-once'); // reset in case
+          rcBox.classList.add('shimmer-once');
+        }, null, "-=0.22");
         mainTimeline.to(rcBox, {
           opacity: 1,
           y: 0,
