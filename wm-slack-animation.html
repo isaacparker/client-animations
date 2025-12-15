@@ -182,38 +182,6 @@
       pointer-events: none;
     }
 
-    /* Border trace positioned outside to avoid clipping */
-    .border-trace-svg {
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      width: calc(100% + 4px);
-      height: calc(100% + 4px);
-      pointer-events: none;
-      z-index: 101;
-      opacity: 0;
-      overflow: visible;
-    }
-
-    .border-trace-svg.animating rect {
-      stroke-dasharray: 350 2050;
-      stroke-dashoffset: 2400;
-      animation: traceBorder 2.2s linear forwards,
-                 traceFadeOut 0.4s ease-out 2.2s forwards;
-    }
-
-    @keyframes traceBorder {
-      to {
-        stroke-dashoffset: 0;
-      }
-    }
-
-    @keyframes traceFadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-
-
     /* Sidebar */
     .sidebar {
       width: 64px;
@@ -897,19 +865,6 @@
 
     <!-- Main Slack Window -->
     <div class="slack-window">
-      <!-- Border trace SVG - positioned outside to avoid overflow clipping -->
-      <svg class="border-trace-svg" width="724" height="548" viewBox="0 0 724 548" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="traceGradient" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" style="stop-color:#F56630;stop-opacity:1" />
-            <stop offset="25%" style="stop-color:#F56630;stop-opacity:0.7" />
-            <stop offset="50%" style="stop-color:#F56630;stop-opacity:0.3" />
-            <stop offset="75%" style="stop-color:#F56630;stop-opacity:0.1" />
-            <stop offset="100%" style="stop-color:#F56630;stop-opacity:0" />
-          </linearGradient>
-        </defs>
-        <rect x="2" y="2" width="720" height="544" rx="16" stroke="url(#traceGradient)" stroke-width="2" fill="none"/>
-      </svg>
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="slack-logo">
@@ -1463,17 +1418,6 @@
       // Clear data source assignments for fresh randomization
       for (let key in itemDataSources) {
         delete itemDataSources[key];
-      }
-
-      // Restart border trace animation on sequence restart
-      const borderTrace = document.querySelector('.border-trace-svg');
-      if (borderTrace) {
-        borderTrace.classList.remove('animating');
-        borderTrace.style.opacity = '0';
-        // force reflow to restart animation
-        void borderTrace.offsetWidth;
-        borderTrace.classList.add('animating');
-        borderTrace.style.opacity = '1';
       }
 
       elements.processingView.style.display = 'block';
