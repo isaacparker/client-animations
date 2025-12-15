@@ -47,6 +47,19 @@
       transition: box-shadow 0.4s ease-out;
     }
     
+    .floating-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 20%;
+      background: linear-gradient(to bottom, #ebe8ec, transparent);
+      z-index: 1;
+      pointer-events: none;
+      border-radius: 10.917px 10.917px 0 0;
+    }
+
     .floating-card::after {
       content: "";
       position: absolute;
@@ -162,7 +175,7 @@
       left: 0;
       right: 0;
       height: 20%;
-      background: linear-gradient(to bottom, #e2e2e2, transparent);
+      background: linear-gradient(to bottom, #ebe8ec, transparent);
       z-index: 10;
       pointer-events: none;
     }
