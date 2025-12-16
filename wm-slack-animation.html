@@ -105,6 +105,14 @@
       width: 300px;
     }
 
+    #card-right {
+      height: 178px;
+    }
+
+    #card-left {
+      height: 177px;
+    }
+
     .card-text {
       font-size: 16.141px;
       line-height: 24.832px;
@@ -1288,17 +1296,9 @@
     function setCardBaseHeights() {
       if (!elements.cardRight || !elements.cardLeft) return;
       
-      // Cards have text pre-filled, so we can measure their natural height
-      const rightHeight = elements.cardRight.offsetHeight;
-      const leftHeight = elements.cardLeft.offsetHeight;
-      
-      // Lock the height so typing doesn't cause growth
-      if (rightHeight) {
-        elements.cardRight.style.height = `${rightHeight}px`;
-      }
-      if (leftHeight) {
-        elements.cardLeft.style.height = `${leftHeight}px`;
-      }
+      // Use fixed heights to prevent growth during typing animation
+      elements.cardRight.style.height = '178px';
+      elements.cardLeft.style.height = '177px';
     }
 
     function updateMinHeight() {
